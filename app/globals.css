@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/*
+  Monokai-inspired palette.
+  Emphasis on yellow, red and near-black per Abdel's preference.
+*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-ink: #1a1b17; /* near-black page background */
+  --color-panel: #232420; /* raised surfaces */
+  --color-panel-2: #2b2c26; /* editor "line" surface */
+  --color-line: #3b3c33; /* borders */
+  --color-fg: #f8f8f2; /* primary text */
+  --color-muted: #a6a390; /* secondary text */
+  --color-comment: #75715e; /* monokai comment gray */
+
+  --color-yellow: #e6db74;
+  --color-red: #f92672;
+  --color-orange: #fd971f;
+  --color-green: #a6e22e;
+  --color-cyan: #66d9ef;
+  --color-purple: #ae81ff;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-ink);
+  color: var(--color-fg);
+  -webkit-font-smoothing: antialiased;
+  /* subtle editor-grid backdrop */
+  background-image:
+    radial-gradient(60rem 60rem at 85% -10%, rgba(249, 38, 114, 0.06), transparent 60%),
+    radial-gradient(50rem 50rem at 0% 10%, rgba(230, 219, 116, 0.05), transparent 55%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 3rem 3rem, 3rem 3rem;
+  background-attachment: fixed;
+}
+
+::selection {
+  background-color: var(--color-yellow);
+  color: var(--color-ink);
+}
+
+/* Thin monokai-flavored scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
