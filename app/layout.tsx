@@ -12,7 +12,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://abdel-perez.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Abdel Perez — DevOps Engineer & QA Tester",
   description:
     "Abdel Perez is a DevOps engineer and QA tester who builds reliable pipelines, automates the boring parts, and ships software that stays green.",
@@ -26,11 +29,22 @@ export const metadata: Metadata = {
     "Portfolio",
   ],
   authors: [{ name: "Abdel Perez" }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Abdel Perez — DevOps Engineer & QA Tester",
     description:
       "DevOps engineer and QA tester. Reliable pipelines, thorough testing, software that stays green.",
+    url: SITE_URL,
+    siteName: "Abdel Perez",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Abdel Perez — DevOps Engineer & QA Tester",
+    description:
+      "DevOps engineer and QA tester. Reliable pipelines, thorough testing, software that stays green.",
   },
 };
 

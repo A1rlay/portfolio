@@ -513,8 +513,11 @@ export default function Home() {
       <footer className="border-t border-line py-8">
         <div className="flex flex-col items-center justify-between gap-4 font-mono text-xs text-comment sm:flex-row">
           <p>
-            <span className="text-red">$</span> built by Abdel Perez ·{" "}
-            {new Date().getFullYear()}
+            <span className="text-red">$</span> built by Abdel Perez{" "}
+            <span title="I like shrimps" aria-label="shrimp">
+              🦐
+            </span>{" "}
+            · {new Date().getFullYear()}
           </p>
           <div className="flex gap-5">
             <a
