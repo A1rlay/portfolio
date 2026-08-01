@@ -27,21 +27,29 @@ const EXPERIENCE: {
   location: string;
   accent: "yellow" | "red" | "orange";
   current?: boolean;
+  stats?: { value: string; label: string }[];
   points: string[];
 }[] = [
     {
-      role: "Software Engineer (Internship)",
+      role: "Software Engineer, Test & CI Infrastructure",
       company: "FundMiner",
       period: "Aug 2025 — Present",
       location: "Remote",
       accent: "yellow",
       current: true,
+      stats: [
+        { value: "623", label: "commits" },
+        { value: "109", label: "PRs · 86% merged" },
+        { value: "~70–74%", label: "of test/CI-breakage fixes" },
+      ],
       points: [
         "Designed and shipped an internal testing & observability dashboard from scratch — now a daily driver across the whole engineering org — with an S3-backed run architecture, zoomable trend charts, per-layer coverage tracking, Playwright failure-video playback, and a flaky/failing-test triage panel.",
-        "Migrated the entire test stack to Docker and built a pre-push hook with smart, changed-file-based test selection (unit vs. full E2E), cutting wasted local and CI time.",
+        "Built the GitHub→Teams CI notification pipeline end-to-end (signature-verified AWS Lambda, PR-lifecycle and on-call triggers) and migrated a second production Lambda into Terraform-managed infrastructure.",
+        "Diagnosed and fixed data-correctness bugs in a Sentry performance dashboard — closed an 8h/24h window-boundary bug and restored hourly ingestion via a new Lambda — then extended it with PR-correlation and before/after comparison views.",
+        "Migrated the entire test stack to Docker and built a pre-push hook with smart, changed-file-based test selection (unit vs. full E2E), cutting wasted local and CI time — since adopted team-wide.",
         "Overhauled the GitHub Actions CI: standardized workflows, added a coverage-baseline job, automated PR labeling and stale-PR flagging, and integrated GitHub, Linear, and Teams into the dashboard for triage.",
         "Fixed a long tail of parallel-worker race conditions in a production job-queue (Postgres row-locking, slot-limit invariants) and wired Sentry into isolated worker threads so failures stop being silently dropped.",
-        "Ran a full XSS audit and closed multiple URL-validation bypasses; migrated the test framework from Jest to Vitest + Playwright with video-recorded failure capture, stabilizing dozens of flaky specs.",
+        "Ran a full XSS audit and closed multiple URL-validation bypasses (moved substring checks to hostname-based validation); migrated the test framework from Jest to Vitest + Playwright with video-recorded failure capture, stabilizing dozens of flaky specs.",
       ],
     },
     {
@@ -75,6 +83,7 @@ const SKILLS: { title: string; accent: string; items: string[] }[] = [
     items: [
       "GitHub Actions",
       "Docker",
+      "CI pipeline design",
       "Smart test selection",
       "Pre-push hooks",
       "n8n",
@@ -89,6 +98,7 @@ const SKILLS: { title: string; accent: string; items: string[] }[] = [
       "E2E automation",
       "Video failure capture",
       "Flaky-test stabilization",
+      "Coverage dashboards",
     ],
   },
   {
@@ -103,9 +113,19 @@ const SKILLS: { title: string; accent: string; items: string[] }[] = [
     ],
   },
   {
-    title: "Cloud, Infra & Stack",
+    title: "Cloud & Infra",
     accent: "text-cyan",
-    items: ["AWS S3", "Linux", "Next.js", "tRPC", "Prisma", "Node.js"],
+    items: ["AWS S3", "AWS Lambda", "Terraform", "Multi-tenant SaaS", "Linux"],
+  },
+  {
+    title: "Application Stack",
+    accent: "text-green",
+    items: ["Next.js", "React", "Node.js", "tRPC", "Prisma", "PostgreSQL"],
+  },
+  {
+    title: "Dev Workflow",
+    accent: "text-purple",
+    items: ["Git", "Neovim", "Docker"],
   },
 ];
 
@@ -293,11 +313,19 @@ export default function Home() {
               <p>
                 At <span className="text-yellow">FundMiner </span>I built an
                 internal testing platform from scratch that&apos;s now a daily
-                driver for the whole engineering org, Dockerized the entire test
-                stack, and hunted down production reliability issues — job-queue
-                race conditions, silently dropped worker failures, and
-                XSS/security gaps. If something can be automated, tested, or
-                monitored, I&apos;d rather do that than fix it at 2&nbsp;a.m.
+                driver for the whole engineering org, own the CI/CD and DevOps
+                infrastructure (<span className="text-fg">AWS Lambda</span>,{" "}
+                <span className="text-fg">Terraform</span>,{" "}
+                <span className="text-fg">Docker</span>), and hunt down
+                production reliability issues — job-queue race conditions,
+                silently dropped worker failures, and XSS/security gaps. This
+                review cycle I was credited with{" "}
+                <span className="text-red">~70–74%</span> of all company-wide
+                test/CI-breakage fixes by commit volume.
+              </p>
+              <p>
+                If something can be automated, tested, or monitored, I&apos;d
+                rather do that than fix it at 2&nbsp;a.m.
               </p>
             </div>
             <div className="flex flex-col gap-4">
@@ -371,6 +399,21 @@ export default function Home() {
                   )}
                   {job.period}
                 </div>
+                {job.stats && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {job.stats.map((stat) => (
+                      <span
+                        key={stat.label}
+                        className="rounded-md border border-line bg-panel-2 px-3 py-1.5 font-mono text-xs text-muted"
+                      >
+                        <span className={`font-bold ${ACCENT_TEXT[job.accent]}`}>
+                          {stat.value}
+                        </span>{" "}
+                        {stat.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <ul className="mt-4 space-y-3">
                   {job.points.map((point, i) => (
                     <li key={i} className="flex gap-3 leading-7 text-muted">

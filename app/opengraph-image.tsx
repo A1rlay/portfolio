@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Abdel Perez — DevOps & Test Infrastructure Engineer";
+export const alt = "Abdel Perez — Platform & Test Infrastructure Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -92,7 +92,7 @@ export default function Image() {
                 fontWeight: 700,
               }}
             >
-              <span style={{ color: YELLOW }}>DevOps</span>
+              <span style={{ color: YELLOW }}>Platform</span>
               <span style={{ color: FG }}>&nbsp;&amp;&nbsp;</span>
               <span style={{ color: RED }}>Test Infrastructure</span>
               <span style={{ color: FG }}>&nbsp;Engineer</span>

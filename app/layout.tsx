@@ -16,16 +16,19 @@ const SITE_URL = "https://abdel-perez.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Abdel Perez — DevOps Engineer & QA Tester",
+  title: "Abdel Perez — Platform & Test Infrastructure Engineer",
   description:
-    "Abdel Perez is a DevOps engineer and QA tester who builds reliable pipelines, automates the boring parts, and ships software that stays green.",
+    "Abdel Perez owns test/CI infrastructure and observability end-to-end on production multi-tenant SaaS — building reliable pipelines, DevOps infrastructure (AWS Lambda, Terraform, Docker), and the tests that keep software honest.",
   keywords: [
     "Abdel Perez",
+    "Platform Engineer",
+    "Test Infrastructure",
     "DevOps",
     "QA",
-    "Testing",
     "CI/CD",
-    "Automation",
+    "Observability",
+    "AWS Lambda",
+    "Terraform",
     "Portfolio",
   ],
   authors: [{ name: "Abdel Perez" }],
@@ -33,18 +36,18 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Abdel Perez — DevOps Engineer & QA Tester",
+    title: "Abdel Perez — Platform & Test Infrastructure Engineer",
     description:
-      "DevOps engineer and QA tester. Reliable pipelines, thorough testing, software that stays green.",
+      "Owns test/CI infrastructure and observability end-to-end on production multi-tenant SaaS. CI/CD · observability · reliability.",
     url: SITE_URL,
     siteName: "Abdel Perez",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Abdel Perez — DevOps Engineer & QA Tester",
+    title: "Abdel Perez — Platform & Test Infrastructure Engineer",
     description:
-      "DevOps engineer and QA tester. Reliable pipelines, thorough testing, software that stays green.",
+      "Owns test/CI infrastructure and observability end-to-end on production multi-tenant SaaS. CI/CD · observability · reliability.",
   },
 };
 
