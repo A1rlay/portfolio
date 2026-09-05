@@ -2,7 +2,15 @@
 
 /*
   Monokai-inspired palette.
-  Emphasis on yellow, red and near-black per Abdel's preference.
+  Emphasis on yellow, red and near-black per Abdel's preference. Dark only.
+
+  Measured contrast against --color-ink (#1a1b17):
+    fg 16.2 · muted 6.8 · yellow 12.2 · green 11.2 · cyan 10.5 · orange 7.9
+    purple 6.1 · red 4.6 · comment 3.5
+  --color-comment clears 3:1 but NOT 4.5:1, so it is only ever used for
+  decorative punctuation (// # $) on --color-ink. Meaningful text uses
+  --color-muted. --color-red drops to 4.1 on --color-panel, so red text on a
+  panel is only used at large/bold sizes (where 3:1 applies).
 */
 @theme inline {
   --color-ink: #1a1b17; /* near-black page background */
@@ -11,7 +19,7 @@
   --color-line: #3b3c33; /* borders */
   --color-fg: #f8f8f2; /* primary text */
   --color-muted: #a6a390; /* secondary text */
-  --color-comment: #75715e; /* monokai comment gray */
+  --color-comment: #75715e; /* monokai comment gray — decorative only */
 
   --color-yellow: #e6db74;
   --color-red: #f92672;
@@ -54,8 +62,347 @@ body {
   scrollbar-color: var(--color-line) transparent;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Focus                                                              */
+/*  One ring, everywhere, on the highest-contrast accent (12.2:1).     */
+/* ------------------------------------------------------------------ */
+
+:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+/* Skip link: off-screen until focused. */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform 120ms ease-out;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll progress — the "build bar" under the sticky header          */
+/*  Purely decorative, aria-hidden, driven entirely by scroll position */
+/*  (no autonomous motion, so it is kept under reduced-motion too).    */
+/* ------------------------------------------------------------------ */
+
+.scroll-progress {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@keyframes scroll-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll reveal                                                      */
+/*                                                                     */
+/*  CSS scroll-driven animations, zero JavaScript. The hidden start    */
+/*  state only exists inside @supports, so a browser without           */
+/*  animation-timeline never hides anything — it just gets no          */
+/*  animation. Elements already on screen at load resolve to their end */
+/*  state immediately, so nothing above the fold is delayed.           */
+/* ------------------------------------------------------------------ */
+
+.reveal {
+  --reveal-start: 6%;
+  --reveal-end: 62%;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry var(--reveal-start) entry var(--reveal-end);
+    }
+  }
+}
+
+/* Cards in a grid enter in a diagonal cascade rather than all at once. */
+.reveal-stagger > *:nth-child(2n) {
+  --reveal-start: 14%;
+  --reveal-end: 74%;
+}
+
+.reveal-stagger > *:nth-child(3n) {
+  --reveal-start: 20%;
+  --reveal-end: 82%;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hero terminal — the CI run                                         */
+/*                                                                     */
+/*  Runs on load, entirely in CSS. The finished output is what the     */
+/*  server renders, so no-JS, no-CSS-animation and reduced-motion all  */
+/*  land on the same readable end state and nothing reflows.           */
+/* ------------------------------------------------------------------ */
+
+.ci {
+  --ci-cmd-dur: 700ms;
+  --ci-row-start: 780ms;
+  --ci-row-step: 120ms;
+  --ci-row-dur: 280ms;
+  --ci-total: 1720ms;
+}
+
+/* The command types itself. Monospace makes `ch` exact, and the track is
+   sized to the full string up front, so the caret moves without reflow. */
+.ci-cmd {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  width: calc(var(--len) * 1ch);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ci-cmd {
+    animation: ci-type var(--ci-cmd-dur) steps(var(--len), end) both;
+  }
+}
+
+@keyframes ci-type {
+  from {
+    width: 0;
+  }
+}
+
+.ci-row {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ci-row {
+    animation: ci-row-in var(--ci-row-dur) ease-out both;
+    animation-delay: calc(var(--ci-row-start) + var(--i) * var(--ci-row-step));
+  }
+}
+
+@keyframes ci-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+}
+
+/* The check glyph lands a beat after its row, so each line reads as
+   "ran, then passed" rather than appearing pre-solved. */
+.ci-check {
+  color: var(--color-green);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ci-check {
+    animation: ci-check-in var(--ci-row-dur) ease-out both;
+    animation-delay: calc(
+      var(--ci-row-start) + var(--i) * var(--ci-row-step) + 110ms
+    );
+  }
+}
+
+@keyframes ci-check-in {
+  from {
+    color: var(--color-comment);
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/*
+  Progress bar and summary share one grid cell, so the swap at the end of
+  the run costs zero layout shift. Under reduced motion the bar is removed
+  outright and the summary is simply present from the start.
+*/
+.ci-status {
+  display: grid;
+  min-height: 1.5rem;
+  align-items: center;
+}
+
+.ci-status > * {
+  grid-area: 1 / 1;
+}
+
+.ci-track {
+  display: none;
+}
+
+.ci-bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  border-radius: 999px;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-yellow),
+    var(--color-green)
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ci-track {
+    display: block;
+    height: 0.375rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: var(--color-panel-2);
+    animation: ci-track-out 240ms ease-in both;
+    animation-delay: var(--ci-total);
+  }
+
+  .ci-bar {
+    /* linear so the bar tracks the rows 1:1 instead of racing ahead */
+    animation: ci-bar-fill var(--ci-total) linear both;
+  }
+
+  .ci-summary {
+    animation: ci-summary-in 320ms ease-out both;
+    animation-delay: calc(var(--ci-total) + 120ms);
+  }
+}
+
+@keyframes ci-bar-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes ci-track-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ci-summary-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+}
+
+/* Blinking caret on the trailing prompt. */
+.ci-caret {
+  display: inline-block;
+  height: 1em;
+  width: 0.55ch;
+  translate: 0 0.15em;
+  background-color: var(--color-yellow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ci-caret {
+    animation: ci-blink 1.1s steps(2, jump-none) infinite;
+    animation-delay: var(--ci-total);
+  }
+}
+
+@keyframes ci-blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Experience rail — jobs as pipeline stages                          */
+/* ------------------------------------------------------------------ */
+
+.rail-node-live::after {
+  content: "";
+  position: absolute;
+  inset: -0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-green);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail-node-live::after {
+    animation: rail-ping 2.4s ease-out infinite;
+  }
+}
+
+@keyframes rail-ping {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.7);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Reduced motion                                                     */
+/* ------------------------------------------------------------------ */
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+
+  /* Nothing above declares an animation under `reduce`, but third-party
+     or future utilities might; this is the backstop. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Exception: the progress bar has no autonomous motion — it is a
+     position readout driven by the user's own scrolling. `auto` keeps it
+     mapped to the full scroll range instead of being collapsed to 0.001ms
+     by the backstop above (which would pin it at 100%). */
+  .scroll-progress {
+    animation-duration: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Mobile disclosure menu                                             */
+/*  `list-style: none` handles Chrome/Firefox; Safari needs its own.   */
+/* ------------------------------------------------------------------ */
+
+summary::-webkit-details-marker {
+  display: none;
 }
